@@ -6,17 +6,26 @@
 <title>Bible Narratives Reading Tracker</title>
 
 <style>
+:root {
+  --primary: #4FA6BF;
+  --primary-dark: #2F7F95;
+  --bg: #F5F9FA;
+  --card: #FFFFFF;
+  --border: #D8E6EC;
+  --text: #1f2d33;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Georgia", serif;
   margin: 0;
-  background: #f6f6f4;
-  color: #222;
+  background: var(--bg);
+  color: var(--text);
 }
 
 header {
-  background: #2f3e46;
+  background: var(--primary);
   color: #fff;
-  padding: 1rem;
+  padding: 1.2rem 1rem;
   text-align: center;
 }
 
@@ -25,7 +34,7 @@ header {
 }
 
 .progress-wrap {
-  background: #ddd;
+  background: var(--border);
   border-radius: 6px;
   overflow: hidden;
   margin-bottom: 1rem;
@@ -33,16 +42,16 @@ header {
 
 .progress-bar {
   height: 10px;
-  background: #52796f;
+  background: var(--primary-dark);
   width: 0%;
   transition: width 0.3s ease;
 }
 
 .week {
-  background: #fff;
+  background: var(--card);
   margin-bottom: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   overflow: hidden;
 }
 
@@ -50,22 +59,24 @@ header {
   padding: 1rem;
   font-weight: 600;
   cursor: pointer;
-  background: #e9ecef;
+  background: #EAF3F6;
 }
 
 .section {
   padding: 0.75rem 1rem;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--border);
 }
 
 .reading label {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  align-items: center;
 }
 
 .memory {
   font-style: italic;
+  color: var(--primary-dark);
 }
 
 .catechism strong {
@@ -81,28 +92,31 @@ header {
 }
 
 button {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  background: #52796f;
+  background: var(--primary);
   color: white;
+  font-weight: 500;
 }
 
 button.secondary {
-  background: #6c757d;
+  background: var(--primary-dark);
 }
 
 a.reading-link {
-  color: #2f3e46;
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 </style>
+
 </head>
 
 <body>
 <header>
-  <h1>Bible Narratives Reading Plan</h1>
+  <img src="logo.svg" alt="Church Logo" class="logo">
+  <h1>Tune My Heart Bible Reading Plan</h1>
   <p>52 Weeks · 5 Days</p>
 </header>
 
