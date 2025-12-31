@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Bible Narratives Reading Plan</title>
 
 <link rel="manifest" href="manifest.json">
@@ -146,7 +146,7 @@ a.reading-link {
 
 <header>
   <img src="logo.svg" alt="Church Logo" class="logo">
-  <h1>Tune My Heart Reading Plan</h1>
+  <h1>Tune My Heart Bible Narratives Reading Plan</h1>
   <p>52 Weeks · 5 Days</p>
 </header>
 
@@ -167,8 +167,10 @@ a.reading-link {
 </div>
 
 <script>
+// =======================
+// DATA
+// =======================
 const weeks = [
-  const weeks = [
   {
     title: "Week 1 – Creation and the Fall",
     memory: "Genesis 1:1 — In the beginning, God created the heavens and the earth.",
@@ -231,16 +233,28 @@ const weeks = [
   }
 ];
 
-// Scaffold remaining weeks (5–52)
+// Scaffold Weeks 5–52
 for (let i = 5; i <= 52; i++) {
   weeks.push({
     title: `Week ${i}`,
     memory: "Memory verse",
-    catechism: { q: "Catechism question", a: "Catechism answer" },
-    readings: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"]
+    catechism: {
+      q: "Catechism question",
+      a: "Catechism answer"
+    },
+    readings: [
+      "Day 1",
+      "Day 2",
+      "Day 3",
+      "Day 4",
+      "Day 5"
+    ]
   });
 }
 
+// =======================
+// RENDERING
+// =======================
 const app = document.getElementById("app");
 
 function updateProgress() {
@@ -280,6 +294,7 @@ weeks.forEach((week, wi) => {
 
   week.readings.forEach((text, di) => {
     const key = `w${wi}d${di}`;
+
     const label = document.createElement("label");
 
     const cb = document.createElement("input");
@@ -292,7 +307,8 @@ weeks.forEach((week, wi) => {
 
     const link = document.createElement("a");
     link.className = "reading-link";
-    link.href = `https://www.biblegateway.com/passage/?search=${encodeURIComponent(text)}&version=ESV`;
+    link.href =
+      `https://www.biblegateway.com/passage/?search=${encodeURIComponent(text)}&version=ESV`;
     link.target = "_blank";
     link.textContent = text;
 
