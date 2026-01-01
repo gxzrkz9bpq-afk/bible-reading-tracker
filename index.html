@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tune My Heart Bible Narratives Reading Plan</title>
+<title>Tune My Heart – Bible Narratives Reading Plan</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4FA6BF">
+<meta name="theme-color" content="#ffffff">
 
 <style>
 :root {
@@ -25,20 +25,30 @@ body {
   color: var(--text);
 }
 
+/* HEADER */
 header {
-  background: var(--primary);
-  color: white;
+  background: #ffffff;
   text-align: center;
   padding: 1.25rem 1rem 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .logo {
   width: 64px;
   height: auto;
   margin-bottom: 0.5rem;
-  opacity: 0.9;
 }
 
+header h1 {
+  margin: 0.25rem 0;
+}
+
+header p {
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* LAYOUT */
 .container {
   padding: 1rem;
 }
@@ -73,11 +83,12 @@ button.secondary {
 
 .progress-bar {
   height: 10px;
-  background: var(--primary-dark);
+  background: var(--primary);
   width: 0%;
   transition: width 0.3s ease;
 }
 
+/* WEEKS */
 .week {
   background: var(--card);
   margin-bottom: 1rem;
@@ -105,7 +116,7 @@ button.secondary {
   margin-bottom: 0.6rem;
 }
 
-.memory a, a.reading-link {
+a.reading-link {
   color: var(--primary-dark);
   text-decoration: underline;
 }
@@ -115,7 +126,7 @@ button.secondary {
   font-size: 0.95rem;
 }
 
-/* 🌙 Dark Mode */
+/* DARK MODE */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0f1f26;
@@ -127,7 +138,8 @@ button.secondary {
   }
 
   header {
-    color: #0f1f26;
+    background: #0f1f26;
+    border-bottom: 1px solid #24424d;
   }
 
   .week summary {
@@ -140,10 +152,9 @@ button.secondary {
 <body>
 
 <header>
-  <!-- logo.svg can be added later; leaving this here is safe -->
   <img src="logo.svg" alt="Church Logo" class="logo" onerror="this.style.display='none'">
-  <h1>Tune My Heart Bible Narratives Reading Plan</h1>
-  <p>52 Weeks · 5 Days</p>
+  <h1>Tune My Heart</h1>
+  <p>Bible Narratives Reading Plan · 52 Weeks</p>
 </header>
 
 <div class="container">
@@ -163,19 +174,22 @@ button.secondary {
 </div>
 
 <script>
+/* =======================
+   DATA
+======================= */
 
 const weeks = [
   {
-    "title": "Week 1: Creation and Fall",
-    "memory": "Genesis 1:1 -In the beginning, God created the heavens and the earth.",
-    "catechism": { "q": "Who made you? What else did God make?", "a": "God made me. God made all things." },
-    "readings": ["Gen 1:1–2:3","Gen 2:4–24","Gen 2:25–3:24","Gen 4:1–16; Prov 1","Gen 6:1–8:19"]
+    title: "Week 1: Creation and Fall",
+    memory: "Genesis 1:1 — In the beginning, God created the heavens and the earth.",
+    catechism: { q: "Who made you? What else did God make?", a: "God made me. God made all things." },
+    readings: ["Gen 1:1–2:3","Gen 2:4–24","Gen 2:25–3:24","Gen 4:1–16; Prov 1","Gen 6:1–8:19"]
   },
   {
-    "title": "Week 2: Abraham and Isaac",
-    "memory": "Genesis 12:2 -And I will make of you a great nation, and I will bless you and make your name great, so that you will be a blessing.",
-    "catechism": { "q": "Why did God make you and all things?", "a": "God made me to glorify him and enjoy him forever." },
-    "readings": ["Gen 8:20–9:29; 11:1–9","Gen 11:26–12:20","Gen 13:1–14:16","Gen 14:17–15:21; 16:1–16","Gen 18:1–15; 21:1–7"]
+    title: "Week 2: Abraham and Isaac",
+    memory: "Genesis 12:2 — I will make of you a great nation…",
+    catechism: { q: "Why did God make you and all things?", a: "To glorify him and enjoy him forever." },
+    readings: ["Gen 8:20–9:29; 11:1–9","Gen 11:26–12:20","Gen 13:1–14:16","Gen 14:17–15:21; 16","Gen 18:1–15; 21:1–7"]
   },
   {
     "title": "Week 3: Lot",
@@ -482,10 +496,24 @@ const weeks = [
   }
 ];
 
-// =======================
-// RENDERING
-// =======================
+/* =======================
+   HELPERS
+======================= */
+
 const app = document.getElementById("app");
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+/* =======================
+   PROGRESS
+======================= */
 
 function updateProgress() {
   let total = weeks.length * 5;
@@ -501,6 +529,10 @@ function updateProgress() {
     Math.round((checked / total) * 100) + "%";
 }
 
+/* =======================
+   RENDER
+======================= */
+
 weeks.forEach((week, wi) => {
   const details = document.createElement("details");
   details.className = "week";
@@ -509,20 +541,13 @@ weeks.forEach((week, wi) => {
   summary.textContent = week.title;
   details.appendChild(summary);
 
-  // Memory verse reference (link out)
   const memory = document.createElement("div");
-  memory.className = "section memory";
-  const memLink = document.createElement("a");
-  memLink.href = `https://www.biblegateway.com/passage/?search=${encodeURIComponent(week.memory)}&version=ESV`;
-  memLink.target = "_blank";
-  memLink.textContent = week.memory;
-  memory.innerHTML = "<strong>Memory Verse:</strong> ";
-  memory.appendChild(memLink);
+  memory.className = "section";
+  memory.innerHTML = `<strong>Memory Verse:</strong> ${escapeHtml(week.memory)}`;
   details.appendChild(memory);
 
-  // Catechism reference only
   const catechism = document.createElement("div");
-  catechism.className = "section catechism";
+  catechism.className = "section";
   catechism.innerHTML = `<strong>${week.catechism.q}</strong><div class="small">${week.catechism.a}</div>`;
   details.appendChild(catechism);
 
@@ -569,8 +594,7 @@ function exportData() {
 function importData() {
   const data = prompt("Paste backup data:");
   if (!data) return;
-  const obj = JSON.parse(data);
-  Object.keys(obj).forEach(k => localStorage.setItem(k, obj[k]));
+  Object.entries(JSON.parse(data)).forEach(([k,v]) => localStorage.setItem(k,v));
   location.reload();
 }
 
