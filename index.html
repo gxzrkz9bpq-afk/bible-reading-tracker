@@ -9,148 +9,160 @@
 <meta name="theme-color" content="#ffffff">
 
 <style>
-:root {
-  --primary: #4FA6BF;
-  --primary-dark: #2F7F95;
-  --bg: #F5F9FA;
-  --card: #FFFFFF;
-  --border: #D8E6EC;
-  --text: #1f2d33;
+:root{
+  --primary:#4FA6BF;
+  --primary-dark:#2F7F95;
+  --bg:#F5F9FA;
+  --card:#FFFFFF;
+  --border:#D8E6EC;
+  --text:#1f2d33;
+  --muted:#5b6b73;
+  --today-bg:#fff7cc;
 }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Georgia", serif;
-  background: var(--bg);
-  color: var(--text);
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Georgia",serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-/* HEADER */
-header {
-  background: #ffffff;
-  text-align: center;
-  padding: 1.25rem 1rem 1rem;
-  border-bottom: 1px solid var(--border);
+/* Header (white as requested) */
+header{
+  background:#fff;
+  text-align:center;
+  padding:1.25rem 1rem 1rem;
+  border-bottom:1px solid var(--border);
+}
+.logo{width:64px;height:auto;margin-bottom:.5rem}
+header h1{margin:.25rem 0}
+header p{margin:0;color:var(--muted)}
+
+/* Layout */
+.container{padding:1rem; max-width: 920px; margin: 0 auto;}
+.controls{
+  display:flex;
+  gap:.5rem;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:1rem;
+}
+button{
+  padding:.5rem .9rem;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  background:var(--primary);
+  color:#fff;
+  font-weight:600;
+}
+button.secondary{background:var(--primary-dark)}
+button.ghost{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+}
+input[type="search"]{
+  flex: 1 1 260px;
+  padding:.55rem .75rem;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--text);
+}
+select{
+  padding:.55rem .65rem;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--text);
+}
+.notice{
+  margin:.5rem 0 1rem;
+  padding:.75rem 1rem;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:10px;
+  color:var(--muted);
 }
 
-.logo {
-  width: 64px;
-  height: auto;
-  margin-bottom: 0.5rem;
+/* Progress */
+.progress-wrap{
+  background:var(--border);
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:1rem;
+}
+.progress-bar{
+  height:10px;
+  background:var(--primary);
+  width:0%;
+  transition:width .25s ease;
 }
 
-header h1 {
-  margin: 0.25rem 0;
+/* Weeks */
+.week{
+  background:var(--card);
+  margin-bottom:1rem;
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  overflow:hidden;
 }
-
-header p {
-  margin: 0;
-  opacity: 0.7;
+.week summary{
+  padding:1rem;
+  font-weight:700;
+  cursor:pointer;
+  background:#EAF3F6;
 }
-
-/* LAYOUT */
-.container {
-  padding: 1rem;
+.section{
+  padding:.75rem 1rem;
+  border-top:1px solid var(--border);
 }
-
-.controls {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
+.reading label{
+  display:flex;
+  align-items:flex-start;
+  gap:.6rem;
+  margin-bottom:.6rem;
+  padding:.25rem .35rem;
+  border-radius:10px;
 }
-
-button {
-  padding: 0.5rem 0.9rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background: var(--primary);
-  color: white;
-  font-weight: 500;
+.reading label.today{
+  background: var(--today-bg);
+  border: 1px dashed rgba(0,0,0,.15);
 }
-
-button.secondary {
-  background: var(--primary-dark);
+a.reading-link{
+  color:var(--primary-dark);
+  text-decoration:underline;
 }
+.small{opacity:.9;font-size:.95rem;color:var(--muted)}
 
-.progress-wrap {
-  background: var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
+/* Hide filtered weeks */
+.week.hidden{display:none;}
 
-.progress-bar {
-  height: 10px;
-  background: var(--primary);
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-/* WEEKS */
-.week {
-  background: var(--card);
-  margin-bottom: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  overflow: hidden;
-}
-
-.week summary {
-  padding: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: #EAF3F6;
-}
-
-.section {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--border);
-}
-
-.reading label {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.6rem;
-}
-
-a.reading-link {
-  color: var(--primary-dark);
-  text-decoration: underline;
-}
-
-.small {
-  opacity: 0.85;
-  font-size: 0.95rem;
-}
-
-/* DARK MODE */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f1f26;
-    --card: #162c35;
-    --border: #24424d;
-    --text: #e6f1f4;
-    --primary: #5fb7cf;
-    --primary-dark: #88cfe1;
+/* Dark mode */
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1f26;
+    --card:#162c35;
+    --border:#24424d;
+    --text:#e6f1f4;
+    --muted:#b9c9cf;
+    --primary:#5fb7cf;
+    --primary-dark:#88cfe1;
+    --today-bg:#3a3a1d;
   }
-
-  header {
-    background: #0f1f26;
-    border-bottom: 1px solid #24424d;
+  header{background:#0f1f26}
+  input[type="search"], select{
+    background:#0f1f26;
+    color:var(--text);
   }
-
-  .week summary {
-    background: #1e3a44;
-  }
+  .notice{background:#0f1f26}
+  .week summary{background:#1e3a44}
 }
 </style>
 </head>
 
 <body>
-
 <header>
   <img src="logo.svg" alt="Church Logo" class="logo" onerror="this.style.display='none'">
   <h1>Tune My Heart</h1>
@@ -160,10 +172,25 @@ a.reading-link {
 <div class="container">
 
   <div class="controls">
+    <button class="secondary" id="btnToday">Today</button>
+
+    <select id="weekJump" aria-label="Jump to week">
+      <option value="">Jump to week…</option>
+    </select>
+
+    <input id="searchBox" type="search" placeholder="Search week title, readings, memory, catechism…" />
+
+    <button class="ghost" id="btnClearSearch">Clear</button>
+
     <button onclick="resetProgress()">Reset</button>
     <button class="secondary" onclick="exportData()">Export</button>
     <button class="secondary" onclick="importData()">Import</button>
+    <button class="ghost" id="btnStartDate">Set Start Date</button>
+
+    <button class="secondary" id="btnInstall" style="display:none;">Install App</button>
   </div>
+
+  <div class="notice" id="notice" style="display:none;"></div>
 
   <strong>Year Progress</strong>
   <div class="progress-wrap">
@@ -496,26 +523,94 @@ const weeks = [
   }
 ];
 
-/* =======================
-   HELPERS
-======================= */
+/* =========================================================
+   2) Helpers
+   ========================================================= */
 
 const app = document.getElementById("app");
+const notice = document.getElementById("notice");
 
-function escapeHtml(str) {
+function escapeHtml(str){
   return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-/* =======================
-   PROGRESS
-======================= */
+function showNotice(msg){
+  notice.textContent = msg;
+  notice.style.display = msg ? "block" : "none";
+}
 
-function updateProgress() {
+function isoDateLocal(d){
+  // YYYY-MM-DD in local time
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+
+/* =========================================================
+   3) Start Date + Today calculation
+   - Default start date: first time you open, today.
+   - Mapping: 7-day weeks; reading days assumed Mon–Fri (0–4).
+   - Sat/Sun: “catch-up/rest day” and still opens current week.
+   ========================================================= */
+
+const START_KEY = "planStartDateISO"; // YYYY-MM-DD
+
+function getStartDate(){
+  let s = localStorage.getItem(START_KEY);
+  if (!s){
+    s = isoDateLocal(new Date());
+    localStorage.setItem(START_KEY, s);
+  }
+  // Parse as local midnight
+  const [yy,mm,dd] = s.split("-").map(Number);
+  return new Date(yy, mm-1, dd, 0, 0, 0, 0);
+}
+
+function setStartDatePrompt(){
+  const current = localStorage.getItem(START_KEY) || isoDateLocal(new Date());
+  const input = prompt("Enter plan start date (YYYY-MM-DD):", current);
+  if (!input) return;
+
+  // basic validation
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input)){
+    alert("Invalid format. Use YYYY-MM-DD.");
+    return;
+  }
+  localStorage.setItem(START_KEY, input);
+  // Re-render today highlight/open
+  clearTodayHighlights();
+  autoOpenToday(true);
+}
+
+function getTodayIndex(){
+  const start = getStartDate();
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0,0);
+
+  const ms = today - start;
+  const daysSince = Math.floor(ms / 86400000);
+
+  // Before start date: treat as week 0 day 0
+  const safeDays = Math.max(0, daysSince);
+
+  const weekIndex = Math.min(weeks.length - 1, Math.floor(safeDays / 7));
+  const dow = safeDays % 7; // 0..6
+
+  // 0..4 are reading days; 5..6 are weekend
+  return { weekIndex, dayIndex: dow, isWeekend: dow >= 5, daysSince: safeDays };
+}
+
+/* =========================================================
+   4) Progress
+   ========================================================= */
+
+function updateProgress(){
   let total = weeks.length * 5;
   let checked = 0;
 
@@ -529,76 +624,260 @@ function updateProgress() {
     Math.round((checked / total) * 100) + "%";
 }
 
-/* =======================
-   RENDER
-======================= */
+/* =========================================================
+   5) Render
+   ========================================================= */
 
-weeks.forEach((week, wi) => {
-  const details = document.createElement("details");
-  details.className = "week";
+let weekEls = []; // store detail elements for search + jump
+let todayMarker = { weekIndex: null, dayIndex: null };
 
-  const summary = document.createElement("summary");
-  summary.textContent = week.title;
-  details.appendChild(summary);
+function render(){
+  app.innerHTML = "";
+  weekEls = [];
 
-  const memory = document.createElement("div");
-  memory.className = "section";
-  memory.innerHTML = `<strong>Memory Verse:</strong> ${escapeHtml(week.memory)}`;
-  details.appendChild(memory);
-
-  const catechism = document.createElement("div");
-  catechism.className = "section";
-  catechism.innerHTML = `<strong>${week.catechism.q}</strong><div class="small">${week.catechism.a}</div>`;
-  details.appendChild(catechism);
-
-  const readings = document.createElement("div");
-  readings.className = "section reading";
-
-  week.readings.forEach((text, di) => {
-    const key = `w${wi}d${di}`;
-    const label = document.createElement("label");
-
-    const cb = document.createElement("input");
-    cb.type = "checkbox";
-    cb.checked = localStorage.getItem(key) === "true";
-    cb.onchange = () => {
-      localStorage.setItem(key, cb.checked);
-      updateProgress();
-    };
-
-    const link = document.createElement("a");
-    link.className = "reading-link";
-    link.href = `https://www.biblegateway.com/passage/?search=${encodeURIComponent(text)}&version=ESV`;
-    link.target = "_blank";
-    link.textContent = text;
-
-    label.appendChild(cb);
-    label.appendChild(link);
-    readings.appendChild(label);
+  // Build jump dropdown
+  const weekJump = document.getElementById("weekJump");
+  weekJump.innerHTML = '<option value="">Jump to week…</option>';
+  weeks.forEach((w, i) => {
+    const opt = document.createElement("option");
+    opt.value = String(i);
+    opt.textContent = `Week ${i+1}: ${w.title.replace(/^Week\s+\d+:\s*/i,"")}`;
+    weekJump.appendChild(opt);
   });
 
-  details.appendChild(readings);
-  app.appendChild(details);
+  weeks.forEach((week, wi) => {
+    const details = document.createElement("details");
+    details.className = "week";
+    details.dataset.weekIndex = String(wi);
+
+    const summary = document.createElement("summary");
+    summary.textContent = week.title;
+    details.appendChild(summary);
+
+    // Memory (plain text)
+    const memory = document.createElement("div");
+    memory.className = "section memory";
+    memory.innerHTML = `<strong>Memory Verse:</strong> ${escapeHtml(week.memory)}`;
+    details.appendChild(memory);
+
+    // Catechism (plain text)
+    const catechism = document.createElement("div");
+    catechism.className = "section catechism";
+    catechism.innerHTML = `<strong>${escapeHtml(week.catechism.q)}</strong><div class="small">${escapeHtml(week.catechism.a)}</div>`;
+    details.appendChild(catechism);
+
+    // Readings
+    const readings = document.createElement("div");
+    readings.className = "section reading";
+
+    week.readings.forEach((text, di) => {
+      const key = `w${wi}d${di}`;
+      const label = document.createElement("label");
+      label.dataset.dayIndex = String(di);
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = localStorage.getItem(key) === "true";
+      cb.onchange = () => {
+        localStorage.setItem(key, cb.checked);
+        updateProgress();
+      };
+
+      const link = document.createElement("a");
+      link.className = "reading-link";
+      link.href = `https://www.biblegateway.com/passage/?search=${encodeURIComponent(text)}&version=ESV`;
+      link.target = "_blank";
+      link.textContent = text;
+
+      label.appendChild(cb);
+      label.appendChild(link);
+      readings.appendChild(label);
+    });
+
+    details.appendChild(readings);
+    app.appendChild(details);
+    weekEls.push(details);
+  });
+
+  updateProgress();
+}
+
+/* =========================================================
+   6) Today: auto-open + highlight
+   ========================================================= */
+
+function clearTodayHighlights(){
+  document.querySelectorAll(".reading label.today").forEach(el => el.classList.remove("today"));
+}
+
+function openWeek(wi){
+  const el = weekEls[wi];
+  if (!el) return;
+  el.open = true;
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function highlightTodayReading(wi, day){
+  // only highlight if Mon–Fri mapped to 0..4
+  if (day < 0 || day > 4) return;
+  const el = weekEls[wi];
+  if (!el) return;
+  const label = el.querySelector(`.reading label[data-day-index="${day}"]`);
+  if (label) label.classList.add("today");
+}
+
+function autoOpenToday(forceOpen=false){
+  const { weekIndex, dayIndex, isWeekend } = getTodayIndex();
+
+  todayMarker.weekIndex = weekIndex;
+  todayMarker.dayIndex = dayIndex;
+
+  // weekend note
+  if (isWeekend){
+    showNotice("Today is a catch-up/rest day (Sat/Sun). Opening this week’s readings.");
+  } else {
+    showNotice(""); // clear
+  }
+
+  // Auto-open: only if first load or forceOpen
+  const AUTO_KEY = "autoOpenTodayEnabled";
+  const enabled = localStorage.getItem(AUTO_KEY);
+  const isFirst = (enabled === null); // default true
+  if (isFirst) localStorage.setItem(AUTO_KEY, "true");
+
+  const shouldOpen = forceOpen || localStorage.getItem(AUTO_KEY) === "true";
+  clearTodayHighlights();
+
+  if (shouldOpen){
+    openWeek(weekIndex);
+  }
+  // Highlight only reading days 0..4
+  highlightTodayReading(weekIndex, dayIndex);
+}
+
+/* =========================================================
+   7) Search + Jump
+   ========================================================= */
+
+function normalize(s){ return String(s || "").toLowerCase(); }
+
+function applySearch(q){
+  const query = normalize(q).trim();
+  if (!query){
+    weekEls.forEach(el => el.classList.remove("hidden"));
+    return;
+  }
+  weekEls.forEach((el, i) => {
+    const w = weeks[i];
+    const haystack = [
+      w.title,
+      w.memory,
+      w.catechism?.q,
+      w.catechism?.a,
+      ...(w.readings || [])
+    ].map(normalize).join(" | ");
+
+    el.classList.toggle("hidden", !haystack.includes(query));
+  });
+}
+
+document.getElementById("searchBox").addEventListener("input", (e) => {
+  applySearch(e.target.value);
 });
 
-function resetProgress() {
+document.getElementById("btnClearSearch").addEventListener("click", () => {
+  document.getElementById("searchBox").value = "";
+  applySearch("");
+});
+
+document.getElementById("weekJump").addEventListener("change", (e) => {
+  const v = e.target.value;
+  if (v === "") return;
+  const wi = Number(v);
+  if (!Number.isFinite(wi)) return;
+  // Clear search so it doesn't hide the week
+  document.getElementById("searchBox").value = "";
+  applySearch("");
+  openWeek(wi);
+});
+
+/* =========================================================
+   8) PWA Install Prompt
+   ========================================================= */
+
+let deferredPrompt = null;
+const btnInstall = document.getElementById("btnInstall");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  btnInstall.style.display = "inline-block";
+});
+
+btnInstall.addEventListener("click", async () => {
+  if (!deferredPrompt){
+    // iOS Safari doesn’t fire beforeinstallprompt
+    showIOSInstallHelp();
+    return;
+  }
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  btnInstall.style.display = "none";
+});
+
+// iOS “Add to Home Screen” helper
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+function isInStandalone(){
+  return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (navigator.standalone === true);
+}
+function showIOSInstallHelp(){
+  if (!isIOS() || isInStandalone()) return;
+  showNotice("To install on iPhone/iPad: open in Safari → Share → “Add to Home Screen”.");
+}
+
+/* =========================================================
+   9) Export/Import/Reset
+   ========================================================= */
+
+function resetProgress(){
   if (!confirm("Reset all progress?")) return;
+  // Keep start date unless you want to clear it too:
+  const start = localStorage.getItem(START_KEY);
   localStorage.clear();
+  if (start) localStorage.setItem(START_KEY, start);
   location.reload();
 }
 
-function exportData() {
-  prompt("Copy your backup data:", JSON.stringify(localStorage));
+function exportData(){
+  // Export only our keys so you don’t dump random browser storage
+  const out = {};
+  Object.keys(localStorage).forEach(k => {
+    if (k.startsWith("w") || k === START_KEY || k === "autoOpenTodayEnabled") out[k] = localStorage.getItem(k);
+  });
+  prompt("Copy your backup data:", JSON.stringify(out));
 }
 
-function importData() {
+function importData(){
   const data = prompt("Paste backup data:");
   if (!data) return;
-  Object.entries(JSON.parse(data)).forEach(([k,v]) => localStorage.setItem(k,v));
+  const obj = JSON.parse(data);
+  Object.keys(obj).forEach(k => localStorage.setItem(k, obj[k]));
   location.reload();
 }
 
-updateProgress();
+document.getElementById("btnStartDate").addEventListener("click", setStartDatePrompt);
+document.getElementById("btnToday").addEventListener("click", () => autoOpenToday(true));
+
+/* =========================================================
+   10) Boot
+   ========================================================= */
+
+render();
+autoOpenToday(false);
+showIOSInstallHelp();
 </script>
 
 </body>
