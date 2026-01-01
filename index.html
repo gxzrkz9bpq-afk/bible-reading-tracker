@@ -27,7 +27,7 @@ body{
   color:var(--text);
 }
 
-/* Header (white as requested) */
+/* Header (white) */
 header{
   background:#fff;
   text-align:center;
@@ -39,7 +39,7 @@ header h1{margin:.25rem 0}
 header p{margin:0;color:var(--muted)}
 
 /* Layout */
-.container{padding:1rem; max-width: 920px; margin: 0 auto;}
+.container{padding:1rem; max-width: 960px; margin: 0 auto;}
 .controls{
   display:flex;
   gap:.5rem;
@@ -54,7 +54,7 @@ button{
   cursor:pointer;
   background:var(--primary);
   color:#fff;
-  font-weight:600;
+  font-weight:700;
 }
 button.secondary{background:var(--primary-dark)}
 button.ghost{
@@ -62,21 +62,17 @@ button.ghost{
   border:1px solid var(--border);
   color:var(--text);
 }
-input[type="search"]{
-  flex: 1 1 260px;
+button:disabled{opacity:.55; cursor:not-allowed;}
+
+input[type="search"], select, input[type="time"]{
   padding:.55rem .75rem;
   border-radius:10px;
   border:1px solid var(--border);
   background:#fff;
   color:var(--text);
 }
-select{
-  padding:.55rem .65rem;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#fff;
-  color:var(--text);
-}
+input[type="search"]{flex:1 1 260px;}
+
 .notice{
   margin:.5rem 0 1rem;
   padding:.75rem 1rem;
@@ -85,6 +81,36 @@ select{
   border-radius:10px;
   color:var(--muted);
 }
+
+/* “settings” row */
+.settings{
+  display:flex;
+  gap:.5rem;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:1rem;
+  padding:.75rem 1rem;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:12px;
+}
+.settings .group{
+  display:flex;
+  gap:.4rem;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.settings label{
+  font-size:.95rem;
+  color:var(--muted);
+  font-weight:700;
+}
+.toggle{
+  display:flex;
+  gap:.4rem;
+  align-items:center;
+}
+.toggle input{transform: scale(1.1);}
 
 /* Progress */
 .progress-wrap{
@@ -110,7 +136,7 @@ select{
 }
 .week summary{
   padding:1rem;
-  font-weight:700;
+  font-weight:800;
   cursor:pointer;
   background:#EAF3F6;
 }
@@ -130,13 +156,22 @@ select{
   background: var(--today-bg);
   border: 1px dashed rgba(0,0,0,.15);
 }
+.today-badge{
+  display:inline-block;
+  margin-left:auto;
+  padding:.15rem .55rem;
+  font-size:.75rem;
+  font-weight:900;
+  border-radius:999px;
+  background:var(--primary);
+  color:#fff;
+  line-height:1.4;
+}
 a.reading-link{
   color:var(--primary-dark);
   text-decoration:underline;
 }
-.small{opacity:.9;font-size:.95rem;color:var(--muted)}
-
-/* Hide filtered weeks */
+.small{opacity:.92;font-size:.95rem;color:var(--muted)}
 .week.hidden{display:none;}
 
 /* Dark mode */
@@ -152,11 +187,12 @@ a.reading-link{
     --today-bg:#3a3a1d;
   }
   header{background:#0f1f26}
-  input[type="search"], select{
+  input[type="search"], select, input[type="time"]{
     background:#0f1f26;
     color:var(--text);
   }
   .notice{background:#0f1f26}
+  .settings{background:#0f1f26}
   .week summary{background:#1e3a44}
 }
 </style>
@@ -170,24 +206,52 @@ a.reading-link{
 </header>
 
 <div class="container">
-
   <div class="controls">
     <button class="secondary" id="btnToday">Today</button>
+    <button id="btnMarkToday">Mark Today Complete</button>
 
     <select id="weekJump" aria-label="Jump to week">
       <option value="">Jump to week…</option>
     </select>
 
     <input id="searchBox" type="search" placeholder="Search week title, readings, memory, catechism…" />
-
     <button class="ghost" id="btnClearSearch">Clear</button>
 
     <button onclick="resetProgress()">Reset</button>
     <button class="secondary" onclick="exportData()">Export</button>
     <button class="secondary" onclick="importData()">Import</button>
-    <button class="ghost" id="btnStartDate">Set Start Date</button>
 
-    <button class="secondary" id="btnInstall" style="display:none;">Install App</button>
+    <button class="ghost" id="btnInstall" style="display:none;">Install App</button>
+  </div>
+
+  <div class="settings">
+    <div class="group">
+      <label for="weekStartSelect">Week starts:</label>
+      <select id="weekStartSelect">
+        <option value="0">Sunday</option>
+        <option value="1">Monday</option>
+      </select>
+    </div>
+
+    <div class="group">
+      <label for="readingPatternSelect">Reading days:</label>
+      <select id="readingPatternSelect">
+        <option value="monfri">Mon–Fri</option>
+        <option value="sunthu">Sun–Thu</option>
+      </select>
+    </div>
+
+    <div class="group">
+      <label for="reminderTime">Reminder time:</label>
+      <input type="time" id="reminderTime" value="09:00">
+    </div>
+
+    <div class="toggle">
+      <input type="checkbox" id="reminderToggle">
+      <label for="reminderToggle">Daily reminder</label>
+    </div>
+
+    <button class="ghost" id="btnStartDate">Set Start Date</button>
   </div>
 
   <div class="notice" id="notice" style="display:none;"></div>
@@ -524,12 +588,24 @@ const weeks = [
 ];
 
 /* =========================================================
-   2) Helpers
+   2) Keys / DOM
    ========================================================= */
-
 const app = document.getElementById("app");
 const notice = document.getElementById("notice");
 
+const START_KEY = "planStartDateISO";          // YYYY-MM-DD
+const WEEKSTART_KEY = "weekStartDow";          // 0=Sun, 1=Mon
+const PATTERN_KEY = "readingPattern";          // "monfri" | "sunthu"
+const REM_TOGGLE_KEY = "dailyReminderEnabled"; // "true"/"false"
+const REM_TIME_KEY = "dailyReminderTime";      // "HH:MM"
+
+const btnInstall = document.getElementById("btnInstall");
+const btnMarkToday = document.getElementById("btnMarkToday");
+const btnToday = document.getElementById("btnToday");
+
+/* =========================================================
+   3) Helpers
+   ========================================================= */
 function escapeHtml(str){
   return String(str)
     .replaceAll("&","&amp;")
@@ -538,78 +614,116 @@ function escapeHtml(str){
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
 }
-
 function showNotice(msg){
   notice.textContent = msg;
   notice.style.display = msg ? "block" : "none";
 }
-
 function isoDateLocal(d){
-  // YYYY-MM-DD in local time
   const y = d.getFullYear();
   const m = String(d.getMonth()+1).padStart(2,"0");
   const day = String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
 }
+function parseISOToLocalMidnight(iso){
+  const [yy,mm,dd] = iso.split("-").map(Number);
+  return new Date(yy, mm-1, dd, 0,0,0,0);
+}
+function localMidnight(d){
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0,0,0,0);
+}
+function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
 /* =========================================================
-   3) Start Date + Today calculation
-   - Default start date: first time you open, today.
-   - Mapping: 7-day weeks; reading days assumed Mon–Fri (0–4).
-   - Sat/Sun: “catch-up/rest day” and still opens current week.
+   4) Settings (week start + reading pattern + start date)
    ========================================================= */
-
-const START_KEY = "planStartDateISO"; // YYYY-MM-DD
-
 function getStartDate(){
   let s = localStorage.getItem(START_KEY);
   if (!s){
     s = isoDateLocal(new Date());
     localStorage.setItem(START_KEY, s);
   }
-  // Parse as local midnight
-  const [yy,mm,dd] = s.split("-").map(Number);
-  return new Date(yy, mm-1, dd, 0, 0, 0, 0);
+  return parseISOToLocalMidnight(s);
 }
-
 function setStartDatePrompt(){
   const current = localStorage.getItem(START_KEY) || isoDateLocal(new Date());
   const input = prompt("Enter plan start date (YYYY-MM-DD):", current);
   if (!input) return;
-
-  // basic validation
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input)){
     alert("Invalid format. Use YYYY-MM-DD.");
     return;
   }
   localStorage.setItem(START_KEY, input);
-  // Re-render today highlight/open
+  // Recompute today mapping
   clearTodayHighlights();
   autoOpenToday(true);
 }
+function getWeekStartDow(){
+  const v = localStorage.getItem(WEEKSTART_KEY);
+  return (v === "1") ? 1 : 0;
+}
+function setWeekStartDow(v){
+  localStorage.setItem(WEEKSTART_KEY, String(v === 1 ? 1 : 0));
+}
+function getReadingPattern(){
+  const v = localStorage.getItem(PATTERN_KEY);
+  return (v === "sunthu") ? "sunthu" : "monfri";
+}
+function setReadingPattern(v){
+  localStorage.setItem(PATTERN_KEY, (v === "sunthu") ? "sunthu" : "monfri");
+}
 
+/**
+ * Reading patterns defined by actual weekdays:
+ * JS getDay(): 0=Sun..6=Sat
+ * - monfri => [1,2,3,4,5]
+ * - sunthu => [0,1,2,3,4]
+ */
+function patternWeekdays(pattern){
+  return pattern === "sunthu" ? [0,1,2,3,4] : [1,2,3,4,5];
+}
+
+/**
+ * Week anchor: find the week-start date (Sun/Mon) for a given date.
+ */
+function weekAnchor(date, weekStartDow){
+  const d = localMidnight(date);
+  const dow = d.getDay();
+  const diff = (dow - weekStartDow + 7) % 7;
+  d.setDate(d.getDate() - diff);
+  return d;
+}
+
+/**
+ * Today mapping:
+ * - weekIndex based on weekAnchor difference from start date's weekAnchor
+ * - dayIndex based on whether today’s weekday is one of the 5 reading weekdays
+ */
 function getTodayIndex(){
   const start = getStartDate();
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0,0);
+  const today = localMidnight(now);
 
-  const ms = today - start;
-  const daysSince = Math.floor(ms / 86400000);
+  const weekStartDow = getWeekStartDow();
+  const pattern = getReadingPattern();
+  const readingWeekdays = patternWeekdays(pattern);
 
-  // Before start date: treat as week 0 day 0
-  const safeDays = Math.max(0, daysSince);
+  const startAnchor = weekAnchor(start, weekStartDow);
+  const todayAnchor = weekAnchor(today, weekStartDow);
 
-  const weekIndex = Math.min(weeks.length - 1, Math.floor(safeDays / 7));
-  const dow = safeDays % 7; // 0..6
+  const weeksSince = Math.floor((todayAnchor - startAnchor) / 86400000 / 7);
+  const weekIndex = clamp(weeksSince, 0, weeks.length - 1);
 
-  // 0..4 are reading days; 5..6 are weekend
-  return { weekIndex, dayIndex: dow, isWeekend: dow >= 5, daysSince: safeDays };
+  const wd = today.getDay();
+  const idx = readingWeekdays.indexOf(wd);
+  const isWeekend = (idx === -1);
+
+  // If weekend, no dayIndex; else 0..4
+  return { weekIndex, dayIndex: idx, isWeekend };
 }
 
 /* =========================================================
-   4) Progress
+   5) Progress
    ========================================================= */
-
 function updateProgress(){
   let total = weeks.length * 5;
   let checked = 0;
@@ -625,23 +739,20 @@ function updateProgress(){
 }
 
 /* =========================================================
-   5) Render
+   6) Render
    ========================================================= */
-
-let weekEls = []; // store detail elements for search + jump
-let todayMarker = { weekIndex: null, dayIndex: null };
-
+let weekEls = [];
 function render(){
   app.innerHTML = "";
   weekEls = [];
 
-  // Build jump dropdown
+  // Jump dropdown
   const weekJump = document.getElementById("weekJump");
   weekJump.innerHTML = '<option value="">Jump to week…</option>';
   weeks.forEach((w, i) => {
     const opt = document.createElement("option");
     opt.value = String(i);
-    opt.textContent = `Week ${i+1}: ${w.title.replace(/^Week\s+\d+:\s*/i,"")}`;
+    opt.textContent = `Week ${i+1}: ${w.title.replace(/^Week\\s+\\d+:\\s*/i,"")}`;
     weekJump.appendChild(opt);
   });
 
@@ -656,13 +767,13 @@ function render(){
 
     // Memory (plain text)
     const memory = document.createElement("div");
-    memory.className = "section memory";
+    memory.className = "section";
     memory.innerHTML = `<strong>Memory Verse:</strong> ${escapeHtml(week.memory)}`;
     details.appendChild(memory);
 
-    // Catechism (plain text)
+    // Catechism
     const catechism = document.createElement("div");
-    catechism.className = "section catechism";
+    catechism.className = "section";
     catechism.innerHTML = `<strong>${escapeHtml(week.catechism.q)}</strong><div class="small">${escapeHtml(week.catechism.a)}</div>`;
     details.appendChild(catechism);
 
@@ -703,64 +814,86 @@ function render(){
 }
 
 /* =========================================================
-   6) Today: auto-open + highlight
+   7) Today badge + auto-open + mark-today
    ========================================================= */
-
 function clearTodayHighlights(){
-  document.querySelectorAll(".reading label.today").forEach(el => el.classList.remove("today"));
+  document.querySelectorAll(".reading label.today").forEach(el => {
+    el.classList.remove("today");
+    const badge = el.querySelector(".today-badge");
+    if (badge) badge.remove();
+  });
 }
-
 function openWeek(wi){
   const el = weekEls[wi];
   if (!el) return;
   el.open = true;
   el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
-
-function highlightTodayReading(wi, day){
-  // only highlight if Mon–Fri mapped to 0..4
-  if (day < 0 || day > 4) return;
+function highlightTodayReading(wi, dayIndex){
+  if (dayIndex == null || dayIndex < 0 || dayIndex > 4) return;
   const el = weekEls[wi];
   if (!el) return;
-  const label = el.querySelector(`.reading label[data-day-index="${day}"]`);
-  if (label) label.classList.add("today");
-}
+  const label = el.querySelector(`.reading label[data-day-index="${dayIndex}"]`);
+  if (!label) return;
 
+  label.classList.add("today");
+  if (!label.querySelector(".today-badge")){
+    const badge = document.createElement("span");
+    badge.className = "today-badge";
+    badge.textContent = "TODAY";
+    label.appendChild(badge);
+  }
+}
 function autoOpenToday(forceOpen=false){
   const { weekIndex, dayIndex, isWeekend } = getTodayIndex();
 
-  todayMarker.weekIndex = weekIndex;
-  todayMarker.dayIndex = dayIndex;
-
-  // weekend note
   if (isWeekend){
-    showNotice("Today is a catch-up/rest day (Sat/Sun). Opening this week’s readings.");
+    showNotice("Today is a catch-up/rest day for your selected pattern. Opening this week.");
   } else {
-    showNotice(""); // clear
+    showNotice("");
   }
 
-  // Auto-open: only if first load or forceOpen
-  const AUTO_KEY = "autoOpenTodayEnabled";
-  const enabled = localStorage.getItem(AUTO_KEY);
-  const isFirst = (enabled === null); // default true
-  if (isFirst) localStorage.setItem(AUTO_KEY, "true");
-
-  const shouldOpen = forceOpen || localStorage.getItem(AUTO_KEY) === "true";
   clearTodayHighlights();
-
-  if (shouldOpen){
-    openWeek(weekIndex);
-  }
-  // Highlight only reading days 0..4
+  if (forceOpen) openWeek(weekIndex);
   highlightTodayReading(weekIndex, dayIndex);
+
+  // Mark Today button behavior
+  btnMarkToday.disabled = false;
+  btnMarkToday.onclick = () => markTodayComplete();
+}
+function markTodayComplete(){
+  const { weekIndex, dayIndex, isWeekend } = getTodayIndex();
+  const week = weeks[weekIndex];
+  if (!week) return;
+
+  // If weekend: mark the next unchecked day in the week (or prompt)
+  let targetDay = dayIndex;
+
+  if (isWeekend || targetDay == null){
+    // Find first unchecked in this week
+    const firstUnchecked = week.readings.findIndex((_, di) => localStorage.getItem(`w${weekIndex}d${di}`) !== "true");
+    if (firstUnchecked === -1){
+      alert("All 5 readings for this week are already checked.");
+      return;
+    }
+    targetDay = firstUnchecked;
+    showNotice("Weekend catch-up: marked the next incomplete reading for this week.");
+  }
+
+  localStorage.setItem(`w${weekIndex}d${targetDay}`, "true");
+  // Update checkbox in DOM if visible
+  const el = weekEls[weekIndex];
+  if (el){
+    const cb = el.querySelector(`.reading label[data-day-index="${targetDay}"] input[type="checkbox"]`);
+    if (cb) cb.checked = true;
+  }
+  updateProgress();
 }
 
 /* =========================================================
-   7) Search + Jump
+   8) Search + Jump
    ========================================================= */
-
 function normalize(s){ return String(s || "").toLowerCase(); }
-
 function applySearch(q){
   const query = normalize(q).trim();
   if (!query){
@@ -770,53 +903,36 @@ function applySearch(q){
   weekEls.forEach((el, i) => {
     const w = weeks[i];
     const haystack = [
-      w.title,
-      w.memory,
-      w.catechism?.q,
-      w.catechism?.a,
-      ...(w.readings || [])
+      w.title, w.memory, w.catechism?.q, w.catechism?.a, ...(w.readings || [])
     ].map(normalize).join(" | ");
-
     el.classList.toggle("hidden", !haystack.includes(query));
   });
 }
-
-document.getElementById("searchBox").addEventListener("input", (e) => {
-  applySearch(e.target.value);
-});
-
+document.getElementById("searchBox").addEventListener("input", (e) => applySearch(e.target.value));
 document.getElementById("btnClearSearch").addEventListener("click", () => {
   document.getElementById("searchBox").value = "";
   applySearch("");
 });
-
 document.getElementById("weekJump").addEventListener("change", (e) => {
   const v = e.target.value;
   if (v === "") return;
   const wi = Number(v);
-  if (!Number.isFinite(wi)) return;
-  // Clear search so it doesn't hide the week
   document.getElementById("searchBox").value = "";
   applySearch("");
   openWeek(wi);
 });
 
 /* =========================================================
-   8) PWA Install Prompt
+   9) PWA Install Prompt + iOS help
    ========================================================= */
-
 let deferredPrompt = null;
-const btnInstall = document.getElementById("btnInstall");
-
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
   btnInstall.style.display = "inline-block";
 });
-
 btnInstall.addEventListener("click", async () => {
   if (!deferredPrompt){
-    // iOS Safari doesn’t fire beforeinstallprompt
     showIOSInstallHelp();
     return;
   }
@@ -825,11 +941,7 @@ btnInstall.addEventListener("click", async () => {
   deferredPrompt = null;
   btnInstall.style.display = "none";
 });
-
-// iOS “Add to Home Screen” helper
-function isIOS(){
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
-}
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
 function isInStandalone(){
   return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (navigator.standalone === true);
 }
@@ -839,27 +951,115 @@ function showIOSInstallHelp(){
 }
 
 /* =========================================================
-   9) Export/Import/Reset
+   10) Daily Reminder Hook (best-effort)
+   IMPORTANT: This can show notifications when the app is open
+   (or in some browsers, when installed + running). True background
+   notifications require a service worker.
    ========================================================= */
+let reminderTimer = null;
+let reminderInterval = null;
 
-function resetProgress(){
-  if (!confirm("Reset all progress?")) return;
-  // Keep start date unless you want to clear it too:
-  const start = localStorage.getItem(START_KEY);
-  localStorage.clear();
-  if (start) localStorage.setItem(START_KEY, start);
-  location.reload();
+function getReminderEnabled(){
+  return localStorage.getItem(REM_TOGGLE_KEY) === "true";
+}
+function setReminderEnabled(v){
+  localStorage.setItem(REM_TOGGLE_KEY, v ? "true" : "false");
+}
+function getReminderTime(){
+  return localStorage.getItem(REM_TIME_KEY) || "09:00";
+}
+function setReminderTime(v){
+  localStorage.setItem(REM_TIME_KEY, v);
 }
 
+async function ensureNotificationPermission(){
+  if (!("Notification" in window)) {
+    alert("Notifications aren’t supported in this browser.");
+    return false;
+  }
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") {
+    alert("Notifications are blocked. Enable them in your browser/site settings.");
+    return false;
+  }
+  const perm = await Notification.requestPermission();
+  return perm === "granted";
+}
+
+function scheduleReminder(){
+  clearReminderTimers();
+  if (!getReminderEnabled()) return;
+
+  if (!("Notification" in window)) return;
+
+  // Compute ms until next reminder time
+  const now = new Date();
+  const [hh, mm] = getReminderTime().split(":").map(Number);
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+
+  const msUntil = next - now;
+
+  reminderTimer = setTimeout(() => {
+    fireReminder();
+    // Then every 24h while open
+    reminderInterval = setInterval(fireReminder, 86400000);
+  }, msUntil);
+}
+
+function clearReminderTimers(){
+  if (reminderTimer) clearTimeout(reminderTimer);
+  if (reminderInterval) clearInterval(reminderInterval);
+  reminderTimer = null;
+  reminderInterval = null;
+}
+
+function fireReminder(){
+  try{
+    const { weekIndex, dayIndex, isWeekend } = getTodayIndex();
+    const title = "Today’s Reading";
+    let body = "";
+
+    if (isWeekend){
+      body = `Catch-up/rest day. Open Week ${weekIndex + 1} to review.`;
+    } else {
+      const ref = weeks[weekIndex]?.readings?.[dayIndex] || "Open the plan.";
+      body = `Week ${weekIndex + 1}, Day ${dayIndex + 1}: ${ref}`;
+    }
+
+    if (Notification.permission === "granted"){
+      new Notification(title, { body });
+    }
+  }catch(e){}
+}
+
+/* =========================================================
+   11) Export/Import/Reset
+   ========================================================= */
+function resetProgress(){
+  if (!confirm("Reset all progress?")) return;
+
+  // Preserve plan settings
+  const preserved = {};
+  [START_KEY, WEEKSTART_KEY, PATTERN_KEY, REM_TOGGLE_KEY, REM_TIME_KEY].forEach(k => preserved[k] = localStorage.getItem(k));
+
+  localStorage.clear();
+
+  Object.keys(preserved).forEach(k => {
+    if (preserved[k] != null) localStorage.setItem(k, preserved[k]);
+  });
+
+  location.reload();
+}
 function exportData(){
-  // Export only our keys so you don’t dump random browser storage
   const out = {};
   Object.keys(localStorage).forEach(k => {
-    if (k.startsWith("w") || k === START_KEY || k === "autoOpenTodayEnabled") out[k] = localStorage.getItem(k);
+    if (k.startsWith("w") || [START_KEY, WEEKSTART_KEY, PATTERN_KEY, REM_TOGGLE_KEY, REM_TIME_KEY].includes(k)) {
+      out[k] = localStorage.getItem(k);
+    }
   });
   prompt("Copy your backup data:", JSON.stringify(out));
 }
-
 function importData(){
   const data = prompt("Paste backup data:");
   if (!data) return;
@@ -868,16 +1068,75 @@ function importData(){
   location.reload();
 }
 
+/* =========================================================
+   12) Wire UI
+   ========================================================= */
 document.getElementById("btnStartDate").addEventListener("click", setStartDatePrompt);
-document.getElementById("btnToday").addEventListener("click", () => autoOpenToday(true));
+
+btnToday.addEventListener("click", () => {
+  autoOpenToday(true);
+  const { weekIndex } = getTodayIndex();
+  openWeek(weekIndex);
+});
+
+const weekStartSelect = document.getElementById("weekStartSelect");
+weekStartSelect.value = String(getWeekStartDow());
+weekStartSelect.addEventListener("change", () => {
+  setWeekStartDow(Number(weekStartSelect.value));
+  clearTodayHighlights();
+  autoOpenToday(true);
+});
+
+const readingPatternSelect = document.getElementById("readingPatternSelect");
+readingPatternSelect.value = getReadingPattern();
+readingPatternSelect.addEventListener("change", () => {
+  setReadingPattern(readingPatternSelect.value);
+  clearTodayHighlights();
+  autoOpenToday(true);
+});
+
+const reminderToggle = document.getElementById("reminderToggle");
+const reminderTime = document.getElementById("reminderTime");
+
+reminderToggle.checked = getReminderEnabled();
+reminderTime.value = getReminderTime();
+
+reminderToggle.addEventListener("change", async () => {
+  if (reminderToggle.checked){
+    const ok = await ensureNotificationPermission();
+    if (!ok){
+      reminderToggle.checked = false;
+      setReminderEnabled(false);
+      clearReminderTimers();
+      return;
+    }
+    setReminderEnabled(true);
+    scheduleReminder();
+    showNotice("Daily reminder enabled (works while the app is open / running).");
+  } else {
+    setReminderEnabled(false);
+    clearReminderTimers();
+    showNotice("Daily reminder disabled.");
+  }
+});
+
+reminderTime.addEventListener("change", () => {
+  setReminderTime(reminderTime.value);
+  if (getReminderEnabled()) scheduleReminder();
+});
 
 /* =========================================================
-   10) Boot
+   13) Boot
    ========================================================= */
-
 render();
 autoOpenToday(false);
 showIOSInstallHelp();
+if (getReminderEnabled()){
+  // Best-effort: schedule reminders if permission already granted
+  if ("Notification" in window && Notification.permission === "granted"){
+    scheduleReminder();
+  }
+}
 </script>
 
 </body>
