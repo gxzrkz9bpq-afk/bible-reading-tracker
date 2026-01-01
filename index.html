@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bible Narratives Reading Plan</title>
+<title>Tune My Heart Bible Narratives Reading Plan</title>
 
-<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#4FA6BF">
 
 <style>
@@ -20,7 +19,7 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Georgia", serif;
+  font-family: Georgia, serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -29,53 +28,16 @@ header {
   background: var(--primary);
   color: white;
   text-align: center;
-  padding: 1.25rem 1rem 1rem;
+  padding: 1.25rem 1rem;
 }
 
 .logo {
   width: 64px;
-  height: auto;
-  margin-bottom: 0.5rem;
   opacity: 0.9;
 }
 
 .container {
   padding: 1rem;
-}
-
-.controls {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-button {
-  padding: 0.5rem 0.9rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background: var(--primary);
-  color: white;
-  font-weight: 500;
-}
-
-button.secondary {
-  background: var(--primary-dark);
-}
-
-.progress-wrap {
-  background: var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.progress-bar {
-  height: 10px;
-  background: var(--primary-dark);
-  width: 0%;
-  transition: width 0.3s ease;
 }
 
 .week {
@@ -88,7 +50,7 @@ button.secondary {
 
 .week summary {
   padding: 1rem;
-  font-weight: 600;
+  font-weight: bold;
   cursor: pointer;
   background: #EAF3F6;
 }
@@ -98,43 +60,37 @@ button.secondary {
   border-top: 1px solid var(--border);
 }
 
-.reading label {
+label {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.6rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.memory {
-  font-style: italic;
+a {
   color: var(--primary-dark);
 }
 
-.catechism strong {
-  display: block;
-  margin-bottom: 0.25rem;
+.progress {
+  background: var(--border);
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
-a.reading-link {
-  color: var(--primary-dark);
-  text-decoration: underline;
+.progress-bar {
+  background: var(--primary-dark);
+  height: 100%;
+  width: 0%;
 }
 
-/* 🌙 Dark Mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0f1f26;
     --card: #162c35;
     --border: #24424d;
     --text: #e6f1f4;
-    --primary: #5fb7cf;
-    --primary-dark: #88cfe1;
   }
-
-  header {
-    color: #0f1f26;
-  }
-
   .week summary {
     background: #1e3a44;
   }
@@ -145,158 +101,65 @@ a.reading-link {
 <body>
 
 <header>
-  <img src="logo.svg" alt="Church Logo" class="logo">
-  <h1>Bible Narratives Reading Plan</h1>
+  <img src="logo.svg" class="logo" alt="Logo">
+  <h1>Tune My Heart Bible Narratives Reading Plan</h1>
   <p>52 Weeks · 5 Days</p>
 </header>
 
 <div class="container">
-
-  <div class="controls">
-    <button onclick="resetProgress()">Reset</button>
-    <button class="secondary" onclick="exportData()">Export</button>
-    <button class="secondary" onclick="importData()">Import</button>
-  </div>
-
   <strong>Year Progress</strong>
-  <div class="progress-wrap">
-    <div class="progress-bar" id="yearProgress"></div>
-  </div>
-
+  <div class="progress"><div class="progress-bar" id="progress"></div></div>
   <div id="app"></div>
 </div>
 
 <script>
-// =======================
-// DATA
-// =======================
 const weeks = [
-  {
-    title: "Week 1 – Creation and the Fall",
-    memory: "Genesis 1:1 — In the beginning, God created the heavens and the earth.",
-    catechism: {
-      q: "Who made you?",
-      a: "God made me. God made all things."
-    },
-    readings: [
-      "Genesis 1:1–2:3",
-      "Genesis 2:4–25",
-      "Genesis 3",
-      "Genesis 4; Proverbs 1",
-      "Genesis 6–8"
-    ]
-  },
-  {
-    title: "Week 2 – Flood and Nations",
-    memory: "Genesis 9:13 — I have set my bow in the cloud.",
-    catechism: {
-      q: "What else did God make?",
-      a: "God made all things."
-    },
-    readings: [
-      "Genesis 9",
-      "Genesis 10",
-      "Genesis 11",
-      "Job 1–2",
-      "Job 38–42"
-    ]
-  },
-  {
-    title: "Week 3 – Abraham",
-    memory: "Genesis 12:3 — In you all the families of the earth shall be blessed.",
-    catechism: {
-      q: "Why did God make you and all things?",
-      a: "For his own glory."
-    },
-    readings: [
-      "Genesis 12",
-      "Genesis 13",
-      "Genesis 15",
-      "Genesis 16–17",
-      "Genesis 18–19"
-    ]
-  },
-  {
-    title: "Week 4 – Isaac and Jacob",
-    memory: "Genesis 28:15 — I am with you and will keep you wherever you go.",
-    catechism: {
-      q: "How can you glorify God?",
-      a: "By loving him and doing what he commands."
-    },
-    readings: [
-      "Genesis 21:1–21",
-      "Genesis 22",
-      "Genesis 24",
-      "Genesis 25:19–34",
-      "Genesis 27–28"
-    ]
-  }
+  { title:"Week 1 – Creation", memory:"Gen 1:1", catechism:{q:"Who made you?",a:"God made me."}, readings:["Gen 1–2","Gen 3","Gen 4","Gen 6–8","Prov 1"]},
+  { title:"Week 2 – Flood", memory:"Gen 9:13", catechism:{q:"What else did God make?",a:"God made all things."}, readings:["Gen 9","Gen 10","Gen 11","Job 1–2","Job 38–42"]},
+  { title:"Week 3 – Abraham", memory:"Gen 12:3", catechism:{q:"Why did God make you?",a:"For his glory."}, readings:["Gen 12","Gen 13","Gen 15","Gen 16–17","Gen 18–19"]},
+  { title:"Week 4 – Isaac & Jacob", memory:"Gen 28:15", catechism:{q:"How can you glorify God?",a:"By loving him."}, readings:["Gen 21","Gen 22","Gen 24","Gen 25","Gen 27–28"]},
+  { title:"Week 5 – Joseph", memory:"Gen 50:20", catechism:{q:"What is God?",a:"God is Spirit."}, readings:["Gen 29–30","Gen 37","Gen 39–41","Gen 42–45","Gen 46–50"]},
+  { title:"Week 6 – Exodus", memory:"Exod 1:12", catechism:{q:"Where is God?",a:"God is everywhere."}, readings:["Exod 1–2","Exod 3","Exod 4–6","Exod 7–10","Exod 11–13"]},
+  { title:"Week 7 – Law", memory:"Exod 20:2", catechism:{q:"How many gods?",a:"One God."}, readings:["Exod 14","Exod 15–16","Exod 17–18","Exod 19–20","Heb 8"]},
+  { title:"Week 8 – Tabernacle", memory:"Exod 29:45", catechism:{q:"How many persons in God?",a:"Three."}, readings:["Exod 25–27","Exod 28–29","Exod 32–34","Exod 35–36","Exod 40; John 1"]},
 ];
 
-// Scaffold Weeks 5–52
-for (let i = 5; i <= 52; i++) {
+// Auto-generate Weeks 9–52 consistently
+for (let i = 9; i <= 52; i++) {
   weeks.push({
-    title: `Week ${i}`,
-    memory: "Memory verse",
-    catechism: {
-      q: "Catechism question",
-      a: "Catechism answer"
-    },
-    readings: [
-      "Day 1",
-      "Day 2",
-      "Day 3",
-      "Day 4",
-      "Day 5"
-    ]
+    title:`Week ${i}`,
+    memory:"See reading",
+    catechism:{q:"What does God require?",a:"Faith and obedience."},
+    readings:["Day 1","Day 2","Day 3","Day 4","Day 5"]
   });
 }
 
-// =======================
-// RENDERING
-// =======================
 const app = document.getElementById("app");
 
-function updateProgress() {
-  let total = weeks.length * 5;
-  let checked = 0;
+weeks.forEach((w, wi) => {
+  const d = document.createElement("details");
+  d.className = "week";
 
-  weeks.forEach((w, wi) => {
-    w.readings.forEach((_, di) => {
-      if (localStorage.getItem(`w${wi}d${di}`) === "true") checked++;
-    });
-  });
+  const s = document.createElement("summary");
+  s.textContent = w.title;
+  d.appendChild(s);
 
-  document.getElementById("yearProgress").style.width =
-    Math.round((checked / total) * 100) + "%";
-}
+  const m = document.createElement("div");
+  m.className = "section";
+  m.textContent = "Memory: " + w.memory;
+  d.appendChild(m);
 
-weeks.forEach((week, wi) => {
-  const details = document.createElement("details");
-  details.className = "week";
+  const c = document.createElement("div");
+  c.className = "section";
+  c.innerHTML = `<strong>${w.catechism.q}</strong><br>${w.catechism.a}`;
+  d.appendChild(c);
 
-  const summary = document.createElement("summary");
-  summary.textContent = week.title;
-  details.appendChild(summary);
+  const r = document.createElement("div");
+  r.className = "section";
 
-  const memory = document.createElement("div");
-  memory.className = "section memory";
-  memory.textContent = "Memory Verse: " + week.memory;
-  details.appendChild(memory);
-
-  const catechism = document.createElement("div");
-  catechism.className = "section catechism";
-  catechism.innerHTML = `<strong>${week.catechism.q}</strong>${week.catechism.a}`;
-  details.appendChild(catechism);
-
-  const readings = document.createElement("div");
-  readings.className = "section reading";
-
-  week.readings.forEach((text, di) => {
+  w.readings.forEach((txt, di) => {
     const key = `w${wi}d${di}`;
-
-    const label = document.createElement("label");
-
+    const lbl = document.createElement("label");
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.checked = localStorage.getItem(key) === "true";
@@ -304,41 +167,26 @@ weeks.forEach((week, wi) => {
       localStorage.setItem(key, cb.checked);
       updateProgress();
     };
-
-    const link = document.createElement("a");
-    link.className = "reading-link";
-    link.href =
-      `https://www.biblegateway.com/passage/?search=${encodeURIComponent(text)}&version=ESV`;
-    link.target = "_blank";
-    link.textContent = text;
-
-    label.appendChild(cb);
-    label.appendChild(link);
-    readings.appendChild(label);
+    const a = document.createElement("a");
+    a.href = `https://www.biblegateway.com/passage/?search=${encodeURIComponent(txt)}&version=ESV`;
+    a.target = "_blank";
+    a.textContent = txt;
+    lbl.append(cb,a);
+    r.appendChild(lbl);
   });
 
-  details.appendChild(readings);
-  app.appendChild(details);
+  d.appendChild(r);
+  app.appendChild(d);
 });
 
-function resetProgress() {
-  if (!confirm("Reset all progress?")) return;
-  localStorage.clear();
-  location.reload();
+function updateProgress() {
+  let total = weeks.length * 5;
+  let done = 0;
+  weeks.forEach((w,wi)=>w.readings.forEach((_,di)=>{
+    if(localStorage.getItem(`w${wi}d${di}`)==="true") done++;
+  }));
+  document.getElementById("progress").style.width = (done/total*100)+"%";
 }
-
-function exportData() {
-  prompt("Copy your backup data:", JSON.stringify(localStorage));
-}
-
-function importData() {
-  const data = prompt("Paste backup data:");
-  if (!data) return;
-  const obj = JSON.parse(data);
-  Object.keys(obj).forEach(k => localStorage.setItem(k, obj[k]));
-  location.reload();
-}
-
 updateProgress();
 </script>
 
